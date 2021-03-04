@@ -15,6 +15,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
+  final picker = ImagePicker();
 
   @override
   void initState() {
@@ -54,19 +55,29 @@ class _MyAppState extends State<MyApp> {
             Center(
               child: Text('Running on: $_platformVersion\n'),
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text('Share to Instagram'),
               onPressed: () async {
-                File file =
-                    await ImagePicker.pickImage(source: ImageSource.gallery);
-                await SocialSharePlugin.shareToFeedInstagram(path: file.path);
+                PickedFile file =
+                    await picker.getImage(source: ImageSource.gallery);
+                await SocialSharePlugin.shareToFeedInstagram(
+                  path: file.path,
+                  onSuccess: (_) {
+                    print('Instagram SUCCESS');
+                    return;
+                  },
+                  onCancel: () {
+                    print('Instagram CANCELLED');
+                    return;
+                  },
+                );
               },
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text('Share to Facebook Photo'),
               onPressed: () async {
-                File file =
-                    await ImagePicker.pickImage(source: ImageSource.gallery);
+                PickedFile file =
+                    await picker.getImage(source: ImageSource.gallery);
                 await SocialSharePlugin.shareToFeedFacebookPhoto(
                     path: file.path,
                     hashtag: '#test',
@@ -84,7 +95,7 @@ class _MyAppState extends State<MyApp> {
                     });
               },
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text('Share to Facebook Network Photo'),
               onPressed: () async {
                 await SocialSharePlugin.shareToFeedFacebookPhoto(
@@ -104,12 +115,12 @@ class _MyAppState extends State<MyApp> {
                     });
               },
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text('Share to Facebook Video'),
               onPressed: () async {
                 if (Platform.isAndroid) {
-                  File file =
-                      await ImagePicker.pickVideo(source: ImageSource.gallery);
+                  PickedFile file =
+                      await picker.getVideo(source: ImageSource.gallery);
                   await SocialSharePlugin.shareToFeedFacebookVideo(
                       path: file.path,
                       hashtag: '#test',
@@ -127,6 +138,7 @@ class _MyAppState extends State<MyApp> {
                       });
                 } else if (Platform.isIOS) {
                   await SocialSharePlugin.shareToFeedFacebookVideo(
+                      path: "",
                       hashtag: '#test',
                       onSuccess: (_) {
                         print('FACEBOOK SUCCESS');
@@ -143,7 +155,7 @@ class _MyAppState extends State<MyApp> {
                 }
               },
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text('Share to Facebook Link'),
               onPressed: () async {
                 String url = 'https://flutter.dev/';
@@ -170,7 +182,7 @@ class _MyAppState extends State<MyApp> {
                 print(result);
               },
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text('Share to Twitter'),
               onPressed: () async {
                 String url = 'https://flutter.dev/';

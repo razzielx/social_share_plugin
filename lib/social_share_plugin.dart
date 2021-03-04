@@ -20,9 +20,9 @@ class SocialSharePlugin {
 
   static Future<void> shareToFeedInstagram({
     String type = 'image/*',
-    @required String path,
-    OnSuccessHandler onSuccess,
-    OnCancelHandler onCancel,
+    required String path,
+    required OnSuccessHandler onSuccess,
+    required OnCancelHandler onCancel,
   }) async {
     _channel.setMethodCallHandler((call) {
       switch (call.method) {
@@ -41,13 +41,13 @@ class SocialSharePlugin {
   }
 
   static Future<void> shareToFeedFacebookPhoto({
-    String caption,
-    String hashtag,
-    String path,
-    String url,
-    OnSuccessHandler onSuccess,
-    OnCancelHandler onCancel,
-    OnErrorHandler onError,
+    String? caption,
+    String? hashtag,
+    String? path,
+    String? url,
+    required OnSuccessHandler onSuccess,
+    required OnCancelHandler onCancel,
+    required OnErrorHandler onError,
   }) async {
     if (path == null && url == null) {
       throw Exception('path or url is required!');
@@ -71,7 +71,7 @@ class SocialSharePlugin {
           throw UnsupportedError("Unknown method called");
       }
     });
-    String filePath = path;
+    String filePath = path ?? "";
     if (url != null) {
       filePath = await _urlToFilePath(url);
     }
@@ -83,11 +83,11 @@ class SocialSharePlugin {
   }
 
   static Future<void> shareToFeedFacebookVideo({
-    String hashtag,
-    String path,
-    OnSuccessHandler onSuccess,
-    OnCancelHandler onCancel,
-    OnErrorHandler onError,
+    String? hashtag,
+    required String path,
+    required OnSuccessHandler onSuccess,
+    required OnCancelHandler onCancel,
+    required OnErrorHandler onError,
   }) async {
     if (Platform.isAndroid && path == null) {
       throw Exception('path is required!');
@@ -114,12 +114,12 @@ class SocialSharePlugin {
   }
 
   static Future<dynamic> shareToFeedFacebookLink({
-    String quote,
-    String hashtag,
-    @required String url,
-    OnSuccessHandler onSuccess,
-    OnCancelHandler onCancel,
-    OnErrorHandler onError,
+    String? quote,
+    String? hashtag,
+    required String url,
+    required OnSuccessHandler onSuccess,
+    required OnCancelHandler onCancel,
+    required OnErrorHandler onError,
   }) async {
     _channel.setMethodCallHandler((call) {
       switch (call.method) {
@@ -140,11 +140,11 @@ class SocialSharePlugin {
     });
   }
 
-  static Future<bool> shareToTwitterLink({
-    String text,
-    @required String url,
-    OnSuccessHandler onSuccess,
-    OnCancelHandler onCancel,
+  static Future<dynamic> shareToTwitterLink({
+    required String text,
+    required String url,
+    required OnSuccessHandler onSuccess,
+    required OnCancelHandler onCancel,
   }) async {
     _channel.setMethodCallHandler((call) {
       switch (call.method) {
@@ -169,7 +169,7 @@ class SocialSharePlugin {
     String tempPath = tempDir.path;
     final filePath = '$tempPath/social_share_plugin_tmp_file';
     File file = new File(filePath);
-    http.Response response = await http.get(imageUrl);
+    http.Response response = await http.get(Uri.parse(imageUrl));
     await file.writeAsBytes(response.bodyBytes);
     return filePath;
   }
