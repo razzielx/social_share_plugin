@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:meta/meta.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 typedef Future<dynamic> OnCancelHandler();
 typedef Future<dynamic> OnErrorHandler(String error);
@@ -43,19 +40,12 @@ class SocialSharePlugin {
   static Future<void> shareToFeedFacebookPhoto({
     String? caption,
     String? hashtag,
-    String? path,
-    String? url,
+    required String path,
     required OnSuccessHandler onSuccess,
     required OnCancelHandler onCancel,
     required OnErrorHandler onError,
   }) async {
-    if (path == null && url == null) {
-      throw Exception('path or url is required!');
-    }
-    if (path != null && url != null) {
-      throw Exception('specify only one between path and url!');
-    }
-    if (path != null && path.startsWith('http')) {
+    if (path.startsWith('http')) {
       throw Exception(
           'path must be a local file path, maybe you should use url parameter!');
     }
@@ -71,10 +61,8 @@ class SocialSharePlugin {
           throw UnsupportedError("Unknown method called");
       }
     });
-    String filePath = path ?? "";
-    if (url != null) {
-      filePath = await _urlToFilePath(url);
-    }
+    String filePath = path;
+
     return _channel.invokeMethod('shareToFeedFacebookPhoto', <String, dynamic>{
       'caption': caption,
       'path': filePath,
@@ -162,15 +150,5 @@ class SocialSharePlugin {
       'text': text,
       'url': url,
     });
-  }
-
-  static Future<String> _urlToFilePath(String imageUrl) async {
-    Directory tempDir = await getTemporaryDirectory();
-    String tempPath = tempDir.path;
-    final filePath = '$tempPath/social_share_plugin_tmp_file';
-    File file = new File(filePath);
-    http.Response response = await http.get(Uri.parse(imageUrl));
-    await file.writeAsBytes(response.bodyBytes);
-    return filePath;
   }
 }

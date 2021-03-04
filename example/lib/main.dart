@@ -99,7 +99,7 @@ class _MyAppState extends State<MyApp> {
               child: Text('Share to Facebook Network Photo'),
               onPressed: () async {
                 await SocialSharePlugin.shareToFeedFacebookPhoto(
-                    url: 'https://picsum.photos/600/400',
+                    path: "",
                     hashtag: '#test',
                     onSuccess: (_) {
                       print('FACEBOOK SUCCESS');
